@@ -1,6 +1,11 @@
 Install TensorFlow on NVIDA Jetson TK1
 ========================================
 ### TL;DR
+Install dependencies (pip):
+```shell
+sudo apt-get update
+sudo apt-get install python-pip python-dev
+```
 Download set-up file: 
 ```shell
 wget https://github.com/dat-ai/tensorfow-nvidia-jetson/
@@ -14,7 +19,6 @@ Test TenforFlow on NVIDIA Jetson TK1
 python
 import tensorflow as tf
 ```
-
 -----
 ### Introduction
 
