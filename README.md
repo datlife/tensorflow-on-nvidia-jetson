@@ -8,7 +8,7 @@ wget https://github.com/dat-ai/tensorfow-nvidia-jetson/
 Install file with pip
 ```shell
 sudo pip install
-```shell
+```
 Test TenforFlow on NVIDIA Jetson TK1
 ```shell
 python
