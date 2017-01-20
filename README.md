@@ -24,4 +24,4 @@ TensorFlow mostly support CUDA 7 and up. However, Jetson TK1's CUDA is 6.5.
 
 #### Contents
 * Install using pip (easy)
-* Build from source (hard and not fun)
+* Build from source (hard and not fun) - If you need to build newer TensorFLow.
