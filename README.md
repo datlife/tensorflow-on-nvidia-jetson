@@ -1,7 +1,7 @@
 Install TensorFlow on NVIDA Jetson TK1
 ========================================
 ### TL;DR
-Install dependencies (pip):
+Install dependencies for TensorFlow:
 ```shell
 sudo apt-get update
 sudo apt-get install python-pip python-dev
