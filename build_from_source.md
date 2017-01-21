@@ -5,7 +5,7 @@ Build Tensorflow from source
 
 #### Basic Requirements
 * Time. This process might take you hours.
-* An external memory as swap disk.
+* An external memory as swap disk. (a USB stick is fine.)
 * NVIDIA Jetson TK1 + Ubuntu 14.04.1
 
 #### Summary
