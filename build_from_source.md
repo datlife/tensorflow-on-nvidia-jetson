@@ -4,7 +4,7 @@ Build Tensorflow from source
 ### NVIDIA Jetson TK1 (Linux 32-bit armv7l)
 
 #### Basic Requirements
-* Time. `This process might take you hours.`
+* Time. ``This process might take you hours.``
 * An external memory as swap disk. An USB is okay.
 * NVIDIA Jetson TK1 + Ubuntu 14.04.1
 
@@ -55,7 +55,7 @@ sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
 make -j 4
 sudo make install
 ```
-However, we need older version protobuf v3.0.0-beta-4 to build bazel. ```sudp make install``` is not run so system still uses v3.1.0
+However, we need older version protobuf v3.0.0-beta-4 to build bazel. `sudo make install` is not run so system still uses v3.1.0
 ```shell
 git checkout v3.0.0-beta-2
 ./autogen.sh
