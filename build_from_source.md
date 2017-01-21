@@ -165,7 +165,7 @@ GRPC_JAVA_PLUGIN=../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-jav
 sudo ./compile.sh
 ```
  * Result output
- ```shell
+```shell
  You can skip this first step by providing a path to the bazel binary as second argument:
 INFO:    ./compile.sh compile /path/to/bazel
  Building Bazel from scratch../usr/lib/jvm/java-8-oracle/bin/javac ....
@@ -178,5 +178,23 @@ INFO: Elapsed time: 593.067s, Critical Path: 573.93s
 WARNING: /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE:1: Workspace name in /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE (@io_bazel) does not match the name given in the repository's definition (@bazel_tools); this will cause a build error in future versions.
 
 Build successful! Binary is here: /home/ubuntu/bazel/output/bazel
+
+```
+ * Copy `bazel` to `/usr/local/bin`
+ ```shell
+ sudo cp output/bazel /usr/local/bin/bazel
+ ``` 
+ * Verify that bazel is working
+ ```shell
+ $ bazel
+
+Extracting Bazel installation...
+.....................
+                                               [bazel release 0.4.3- (@non-git)]
+Usage: bazel <command> <options> ...
+
+Available commands:
+  analyze-profile     Analyzes build profile data.
+  build               Builds the specified targets.
 
  ```
