@@ -180,12 +180,12 @@ WARNING: /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE:1: Workspace nam
 Build successful! Binary is here: /home/ubuntu/bazel/output/bazel
 
 ```
- * Copy `bazel` to `/usr/local/bin`
- ```shell
+ * Copy `bazel` to `/usr/local/bin`.
+```shell
  sudo cp output/bazel /usr/local/bin/bazel
- ``` 
+``` 
  * Verify that bazel is working
- ```shell
+```shell
  $ bazel
 
 Extracting Bazel installation...
@@ -197,4 +197,4 @@ Available commands:
   analyze-profile     Analyzes build profile data.
   build               Builds the specified targets.
 
- ```
+```
