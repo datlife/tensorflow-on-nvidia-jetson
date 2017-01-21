@@ -43,18 +43,24 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
 -------------------
 
 In order to install grpc-java, we need new version of protobuf
+ * Download and checkout 3.1.0 version
 ```shell
 cd $HOME
 git clone https://github.com/google/protobuf.git
 cd protobuf
 git checkout v3.1.0
+```
+ * Build and Install `protobuf 3.1.0 
+```shell
 ./autogen.sh
 LDFLAGS=-static ./configure --prefix=$(pwd)/../
 sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
 make -j 4
 sudo make install
 ```
-However, we need older version protobuf v3.0.0-beta-4 to build bazel. `sudo make install` is not run so system still uses v3.1.0
+
+However, we need older version protobuf v3.0.0-beta-4 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
+ * Build protobuf `3.0.0-beta2
 ```shell
 git checkout v3.0.0-beta-2
 ./autogen.sh
