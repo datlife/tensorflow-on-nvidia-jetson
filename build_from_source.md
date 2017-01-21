@@ -147,10 +147,36 @@ unzip -d bazel bazel-0.4.3-dist.zip
 ```shell
 vim ./compile.sh
 # Around line 30. Change ${VERBOSE:=no} to ${VERBOSE:=yes}
+${VERBOSE:=yes}
+```
+* Configure file `tools/cpp/cc_configure.bzl` . The issue has been discuess on [here](https://github.com/bazelbuild/bazel/issues/1264)
+```shell
+# Add an additional if statement to  _get_cpu_value()
+result = repository_ctx.execute(["uname", "-m"])
+machine_cpu = result.stdout.strip()
+if machine_cpu in ["arm", "armv7l", "aarch64"]:
+	return "arm"
+return "k8" if machine in ["amd64", "x86_64", "x64"] else "piii"
 ```
  * Build `bazel` with `protoc v3.0.0-beta-2` and `grpc-java`
 ```shell
 PROTOC=../protobuf/src/protoc
 GRPC_JAVA_PLUGIN=../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java
-./compile.sh
+sudo ./compile.sh
 ```
+ * Result output
+ ```shell
+ You can skip this first step by providing a path to the bazel binary as second argument:
+INFO:    ./compile.sh compile /path/to/bazel
+ Building Bazel from scratch../usr/lib/jvm/java-8-oracle/bin/javac ....
+ ......
+ ......# Wait around 5-10 mins
+ 
+
+Target //src:bazel up-to-date: bazel-bin/src/bazel
+INFO: Elapsed time: 593.067s, Critical Path: 573.93s
+WARNING: /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE:1: Workspace name in /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE (@io_bazel) does not match the name given in the repository's definition (@bazel_tools); this will cause a build error in future versions.
+
+Build successful! Binary is here: /home/ubuntu/bazel/output/bazel
+
+ ```
