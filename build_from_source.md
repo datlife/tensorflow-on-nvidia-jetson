@@ -202,7 +202,7 @@ Available commands:
 5. Install TensorFlow
 ---------------------
 
-### A. Create swap disk
+#### A. Create swap disk
  
 For safety of overloading the disk, people suggest to use external swap disk (USB) to install TensorFlow.
 * Find the USB path
@@ -223,4 +223,4 @@ sudo umount /dev/sda
 sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
-### B. Install TensorFlow
+#### B. Install TensorFlow
