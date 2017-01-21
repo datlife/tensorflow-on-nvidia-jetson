@@ -133,3 +133,24 @@ Total time: 16.264 secs
 This build could be faster, please consider using the Gradle Daemon: https://docs.gradle.org/2.13/userguide/gradle_daemon.html
 
 ```
+
+3. Install bazel
+----------------
+
+* Download `bazel 0.4.3`
+```shell
+cd ~
+wget https://github.com/bazelbuild/bazel/releases/download/0.4.3/bazel-0.4.3-dist.zip
+unzip -d bazel bazel-0.4.3-dist.zip
+```
+* Configure file `./compile.sh`:
+```shell
+vim ./compile.sh
+# Around line 30. Change ${VERBOSE:=no} to ${VERBOSE:=yes}
+```
+ * Build `bazel` with `protoc v3.0.0-beta-2` and `grpc-java`
+```shell
+PROTOC=../protobuf/src/protoc
+GRPC_JAVA_PLUGIN=../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java
+./compile.sh
+```
