@@ -202,7 +202,7 @@ Available commands:
 5. Install TensorFlow
 ---------------------
 
-#### A. Create swap disk
+### A. Create swap disk
  
 For safety of overloading the disk, people suggest to use external swap disk (USB) to install TensorFlow.
 * Find the USB path
@@ -223,7 +223,7 @@ sudo umount /dev/sda
 sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
-#### B. Set up `CUDA 7.0` as compiler for TensorFlow
+### B. Set up `CUDA 7.0` as compiler for TensorFlow
 
 The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
 
@@ -240,7 +240,7 @@ sudo rm cuda
 sudo ln -s cuda-6.5/ cuda
 ```
 
-#### C. Download and Install TensorFlow
+### C. Download and Install TensorFlow
 
 * Download TensorFlow and checkout v0.12.1
 ```shell
@@ -248,8 +248,17 @@ git clone --recurse-submodules https://github.com/tensorflow/tensorflow
 cd tensorflow
 git checkout v0.12.1
 ```
-* run `./configure`
- 
+
+* Replace all `lib-64` with `lib` and configure TF before installation.
+```shell
+grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
+/configure
+``` 
+
+* Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
+```shell
+#define IS_MOBILE_PLATFORM   <----- DELETE THIS LINE
+```
  
 * Update compiler using CUDA 7.0
 ```shell
@@ -262,8 +271,14 @@ git checkout v0.12.1
 * Edit the following files to avoid TensoFlow crashed ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)).
 
 ...* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
+```shell
+```
 ...* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
+```shell
+```
 ...* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
+```shell
+```
   
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
