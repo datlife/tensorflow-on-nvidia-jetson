@@ -15,7 +15,10 @@ Build Tensorflow from source
 4. Install bazel
 5. Install Tensorflow
 
-
+#### References
+* [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
+* [Tensorflow on ODROID-C2](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
+* [TensorFlow on Jetson TK1](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)
 
 -----------------------
 1. Install Dependencies
