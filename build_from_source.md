@@ -91,10 +91,21 @@ vim build.gradle
 # you can show line numbers in vim by :set numbers
 
 # Around line 49.
-      ...
+    ...
     gcc(Gcc) {
          target("linux_arm-v7"){
            cppCompiler.executable="/usr/bin/gcc"
-       }
-       ..
+    }
+    ...
+# Around line 65. below x86_64 add    
+
+    'linux_arm-v7' {
+        architecture "armv7l"
+        operatingSystem "linux"
+    }
+
+# Edit the linkers around lines 100. Removes and replace with
+    linker.args "-static", "-lprotoc", "-lprotobuf", "-static-libgcc",
+                "-static-libstdc++", "-lpthread", "-s"
+
 ```
