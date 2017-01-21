@@ -39,8 +39,8 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
 ```
 
------
-## 2. Install protobuf
+2. Install protobuf
+-------------------
 
 In order to install grpc-java, we need new version of protobuf
 ```shell
@@ -65,4 +65,14 @@ make -j 4
 Check your protobuf installation. It should say libprotoc 3.1.0
 ```shell
 protoc --version
+```
+
+3. Install grpc-java
+--------------------
+
+Download and checkout v0.15.0
+```shell
+cd ~ && git clone https://github.com/grpc/grpc-java.git | cd grpc-java
+
+
 ```
