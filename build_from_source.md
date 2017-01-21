@@ -88,7 +88,7 @@ vim build.gradle
 ```
 * Add the following lines to the file
 ```shell
-# you can show line numbers in vim by :set numbers
+# you can show line numbers in vim by :set number
 
 # Around line 49.
     ...
