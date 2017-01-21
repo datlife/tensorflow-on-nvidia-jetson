@@ -4,10 +4,11 @@ Build Tensorflow from source
 ### NVIDIA Jetson TK1 (Linux 32-bit armv7l)
 
 #### Basic Requirements
-* Time. This process might take you hours.
-* An external memory as swap disk. An USB is okay.
 * NVIDIA Jetson TK1 + Ubuntu 14.04.1
 * CUDA 6.5 + CuDNN installed
+* An external memory as swap disk. An USB is okay.
+* Time. This process might take you hours.
+
 
 #### Summary
 1. Install dependencies
