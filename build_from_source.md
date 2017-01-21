@@ -19,21 +19,21 @@ Build Tensorflow from source
 1. Install Dependencies
 -----------------------
 
-* protobuf
+protobuf
 ```shell
 sudo apt-get install autoconf automake libtool curl make g++ unzip maven
 ```
-* Bazel
+Bazel
 ```shell
 sudo will-be-updated
 ```
-* TensorFlow (I assumed you are using python 2 on Jetson TK1. If you are using python 3, I am not sure if the rest will work)
+TensorFlow (I assumed you are using python 2 on Jetson TK1. If you are using python 3, I am not sure if the rest will work)
 ```shell
 # For Python 2.7
 sudo apt-get install python-pip python-numpy swig python-dev
 sudo pip install wheel
 ```
-* Optimization Flags
+Optimization Flags
 ```shell
 sudo apt-get install gcc-4.8 g++-4.8
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
@@ -42,3 +42,24 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
 
 -----
 ## 2. Install protobuf
+
+For grpc-java, it requires new version of protobuf
+```shell
+cd $HOME
+git clone https://github.com/google/protobuf.git
+cd protobuf
+git checkout v3.1.0
+./autogen.sh
+LDFLAGS=-static ./configure --prefix=$(pwd)/../
+sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
+make -j 4
+sudo make install
+```
+However, we need older version protobuf v3.0.0-beta-4 to build bazel
+```shell
+git checkout v3.0.0-beta-2
+./autogen.sh
+LDFLAGS=-static ./configure --prefix=$(pwd)/../
+sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
+make -j 4
+```
