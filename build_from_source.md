@@ -7,6 +7,7 @@ Build Tensorflow from source
 * Time. This process might take you hours.
 * An external memory as swap disk. An USB is okay.
 * NVIDIA Jetson TK1 + Ubuntu 14.04.1
+* CUDA 6.5 + CuDNN installed
 
 #### Summary
 1. Install dependencies
