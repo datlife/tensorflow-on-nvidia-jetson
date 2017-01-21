@@ -223,9 +223,11 @@ sudo umount /dev/sda
 sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
-#### B. Install TensorFlow
+#### B. Set up `CUDA 7.0` as compiler for TensorFlow
 
- * Download and install CUDA 7.0 as a compiler of TensorFlow since CUDA 6.5 will cause issues during building TensoFlow.
+The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
+
+ * Download and install CUDA 7.0
 ```shell
 wget http://developer.download.nvidia.com/embedded/L4T/r24_Release_v1.0/CUDA/cuda-repo-l4t-7-0-local_7.0-76_armhf.deb
 sudo dpkg -i cuda-repo-l4t-7-0-local_7.0-76_armhf.deb 
@@ -237,3 +239,45 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 sudo rm cuda
 sudo ln -s cuda-6.5/ cuda
 ```
+
+#### C. Download and Install TensorFlow
+
+* Download TensorFlow and checkout v0.12.1
+```shell
+git clone --recurse-submodules https://github.com/tensorflow/tensorflow
+cd tensorflow
+git checkout v0.12.1
+```
+ * run `./configure`
+```shell
+ubuntu@jetson-car:~/tensorflow$ ./configure 
+~/tensorflow ~/tensorflow
+Please specify the location of python. [Default is /usr/bin/python]: 
+Do you wish to build TensorFlow with Google Cloud Platform support? [y/N] 
+No Google Cloud Platform support will be enabled for TensorFlow
+Do you wish to build TensorFlow with Hadoop File System support? [y/N] 
+No Hadoop File System support will be enabled for TensorFlow
+Found possible Python library paths:
+  /usr/local/lib/python2.7/dist-packages
+  /usr/lib/python2.7/dist-packages
+Please input the desired Python library path to use.  Default is [/opt/ros/indigo/lib/python2.7/dist-packages]
+/usr/local/lib/python2.7/dist-packages
+Do you wish to build TensorFlow with OpenCL support? [y/N] 
+No OpenCL support will be enabled for TensorFlow
+Do you wish to build TensorFlow with GPU support? [y/N] y
+GPU support will be enabled for TensorFlow
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
+Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
+Please specify the location where CUDA  toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
+Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+Please note that each additional compute capability significantly increases your build time and binary size.
+[Default is: "3.5,5.2"]: 3.2
+INFO: Starting clean (this may take a while). Consider using --expunge_async if the clean takes more than several minutes.
+.....................
+INFO: All external dependencies fetched successfully.
+Configuration finished
+```
+ 
