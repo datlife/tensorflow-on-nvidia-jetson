@@ -60,7 +60,7 @@ sudo make install
 ```
 
 However, we need older version protobuf v3.0.0-beta-4 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
- * Build protobuf `3.0.0-beta2`
+ * Build `protobuf 3.0.0-beta2`
 ```shell
 git checkout v3.0.0-beta-2
 ./autogen.sh
@@ -68,7 +68,7 @@ LDFLAGS=-static ./configure --prefix=$(pwd)/../
 sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
 make -j 4
 ```
-Check your protobuf installation. It should say libprotoc 3.1.0
+* Check your protobuf installation. It should say `libprotoc 3.1.0`
 ```shell
 protoc --version
 ```
@@ -76,9 +76,25 @@ protoc --version
 3. Install grpc-java
 --------------------
 
-Download and checkout v0.15.0
+* Download and checkout v0.15.0
 ```shell
 cd ~ && git clone https://github.com/grpc/grpc-java.git | cd grpc-java
+git checkout v0.15.0
+```
+* Edit file `grpc-java\compiler\build.gradle` so it could build on Linux ARM32
+```shell
+cd ..\compiler
+vim build.gradle
+```
+* Add the following lines to the file
+```shell
+# you can show line numbers in vim by :set numbers
 
-
+# Around line 49.
+      ...
+    gcc(Gcc) {
+         target("linux_arm-v7"){
+           cppCompiler.executable="/usr/bin/gcc"
+       }
+       ..
 ```
