@@ -21,22 +21,20 @@ Build Tensorflow from source
 1. Install Dependencies
 -----------------------
 
-protobuf
 ```shell
+# For protobuf
 sudo apt-get install autoconf automake libtool curl make g++ unzip maven
-```
-Bazel
-```shell
+
+# For bazel
 sudo will-be-updated
-```
-TensorFlow (I assumed you are using python 2 on Jetson TK1. If you are using python 3, I am not sure if the rest will work)
-```shell
+
+# For TensorFlow (I assumed you are using python 2 on Jetson TK1. If you are using python 3, I am not sure if the rest will work)
 # For Python 2.7
 sudo apt-get install python-pip python-numpy swig python-dev
 sudo pip install wheel
-```
-Optimization Flags
-```shell
+
+# Optimization Flags
+
 sudo apt-get install gcc-4.8 g++-4.8
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
