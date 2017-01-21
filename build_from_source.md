@@ -203,7 +203,7 @@ Available commands:
 ---------------------
 
 ### A. Create swap disk
- 
+ ----------------------
 For safety of overloading the disk, people suggest to use external swap disk (USB) to install TensorFlow.
 * Find the USB path
 ```shell
@@ -224,6 +224,7 @@ sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
 ### B. Set up `CUDA 7.0` as compiler for TensorFlow
+---------------------------------------------------
 
 The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
 
@@ -241,7 +242,7 @@ sudo ln -s cuda-6.5/ cuda
 ```
 
 ### C. Download and Install TensorFlow
-
+---------------------------------------
 * Download TensorFlow and checkout v0.12.1
 ```shell
 git clone --recurse-submodules https://github.com/tensorflow/tensorflow
