@@ -248,23 +248,24 @@ git clone --recurse-submodules https://github.com/tensorflow/tensorflow
 cd tensorflow
 git checkout v0.12.1
 ```
- * run `./configure`
+* run `./configure`
  
  
- * Update compiler using CUDA 7.0
- ```shell
+* Update compiler using CUDA 7.0
+```shell
  cd third_party/gpus/cuda/
  rm -fr bin nvvm
  cp -R /usr/local/cuda-7.0/bin/ bin
  cp -R /usr/local/cuda-7.0/nvvm/ nvvm
- ```
+```
  
- * Edit the following files to avoid TensoFlow crashed. ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)
-  ..* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
-  ..* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
-  ..* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
+* Edit the following files to avoid TensoFlow crashed ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)).
+
+...* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
+...* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
+...* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
   
- * Ready? This will take a long time. Get yourself a cup of coffee. ;)
- ```shell
+* Ready? This will take a long time. Get yourself a cup of coffee. ;)
+```shell
  bazel build -c opt --local_resources 2048,0.5,1.0 --verbose_failures -s --config=cuda //tensorflow/tools/pip_package:build_pip_package
- ````
+````
