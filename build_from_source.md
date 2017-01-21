@@ -109,3 +109,22 @@ vim build.gradle
                 "-static-libstdc++", "-lpthread", "-s"
 
 ```
+* Install 'grpc-java' using `protobuf` of the system
+```shell
+CXXFLAGS="-I$(pwd)/../include" LDFLAGS="-L$(pwd)/../lib" ./gradlew java_pluginExecutable -Pprotoc=$(pwd)/../bin/protoc
+```
+* You should see something like this
+```shell
+*** Building codegen requires Protobuf version 3.0.0-beta-3
+*** Please refer to https://github.com/grpc/grpc-java/blob/master/COMPILING.md#how-to-build-code-generation-plugin
+:grpc-compiler:compileJava_pluginExecutableJava_pluginCpp UP-TO-DATE
+:grpc-compiler:linkJava_pluginExecutable UP-TO-DATE
+:grpc-compiler:java_pluginExecutable UP-TO-DATE
+
+BUILD SUCCESSFUL
+
+Total time: 16.264 secs
+
+This build could be faster, please consider using the Gradle Daemon: https://docs.gradle.org/2.13/userguide/gradle_daemon.html
+
+```
