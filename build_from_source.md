@@ -224,3 +224,16 @@ sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
 #### B. Install TensorFlow
+
+ * Download and install CUDA 7.0 as a compiler of TensorFlow since CUDA 6.5 will cause issues during building TensoFlow.
+```shell
+wget http://developer.download.nvidia.com/embedded/L4T/r24_Release_v1.0/CUDA/cuda-repo-l4t-7-0-local_7.0-76_armhf.deb
+sudo dpkg -i cuda-repo-l4t-7-0-local_7.0-76_armhf.deb 
+sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
+```
+
+* Remove symlink `CUDA 7.0` created and link to `CUDA 6.5` instead
+```shell
+sudo rm cuda
+sudo ln -s cuda-6.5/ cuda
+```
