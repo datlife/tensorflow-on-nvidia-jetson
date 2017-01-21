@@ -1,7 +1,8 @@
-# Build Tensorflow from source
------
+Build Tensorflow from source
+============================
+
 ### NVIDIA Jetson TK1 (Linux 32-bit armv7l)
------
+
 #### Basic Requirements
 * Time. This process might take you hours.
 * An external memory as swap disk.
@@ -14,8 +15,9 @@
 4. Install bazel
 5. Install Tensorflow
 
------
-## 1. Install Dependencies
+
+1. Install Dependencies
+-----------------------
 
 * protobuf
 ```shell
