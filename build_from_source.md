@@ -254,6 +254,22 @@ git checkout v0.12.1
 ```shell
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 /configure
+
+Do you wish to build TensorFlow with GPU support? [y/N] y
+GPU support will be enabled for TensorFlow
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
+Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
+Please specify the location where CUDA  toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
+Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+Please note that each additional compute capability significantly increases your build time and binary size.
+[Default is: "3.5,5.2"]: 3.2
+INFO: Starting clean (this may take a while). Consider using --expunge_async if the clean takes more than several minutes.
+......................
+INFO: All external dependencies fetched successfully.
+Configuration finished
 ``` 
 
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
