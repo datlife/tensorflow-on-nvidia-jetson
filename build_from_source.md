@@ -134,7 +134,7 @@ This build could be faster, please consider using the Gradle Daemon: https://doc
 
 ```
 
-3. Install bazel
+4. Install bazel
 ----------------
 
 * Download `bazel 0.4.3`
@@ -196,5 +196,30 @@ Usage: bazel <command> <options> ...
 Available commands:
   analyze-profile     Analyzes build profile data.
   build               Builds the specified targets.
-
+...
 ```
+
+5. Install TensorFlow
+---------------------
+
+ ..A. Create swap disk
+For safety of overloading the disk, people suggest to use external swap disk (USB) to install TensorFlow.
+* Find you USB path
+```shell
+lsblk
+
+NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda           8:0    1  29.5G  0 disk 		 # <------ This is my usb
+`-sda1        8:1    1  29.5G  0 part [SWAP] 
+mmcblk0rpmb 179:16   0     4M  0 disk 
+mmcblk0     179:0    0  14.7G  0 disk 
+|-mmcblk0p1 179:1    0    14G  0 part /
+....
+```
+* Unmount the disk and create swap disk
+```shell
+sudo umount /dev/sda
+sudo mkswap /dev/sda
+sudo swapon /dev/sda 
+```
+..B. Install TensorFlow
