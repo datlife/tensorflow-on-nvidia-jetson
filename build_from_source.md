@@ -13,7 +13,7 @@ Build Tensorflow from source
 #### Summary
 1. [Install dependencies](#1-install-dependencies)
 2. [Install protobuf](#2-install-protobuf)
-3. [Install grpc-java](#3-install-grpc-java]
+3. [Install grpc-java](#3-install-grpc-java)
 4. [Install bazel](#4-install-bazel)
 5. [Install Tensorflow](#5-install-tensorflow)
 
