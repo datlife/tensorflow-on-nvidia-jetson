@@ -311,6 +311,5 @@ bazel build -c opt --jobs 1 --local_resources 1024,0.5,1.0 --verbose_failures //
 ..1. Ran out of memory. Try to update `--local-resoures`
 
 ```shell
-C++ Compilation Error
---local_resources 1024,0.5,1.0
+C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command--local_resources
 ```
