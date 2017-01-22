@@ -240,6 +240,7 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 sudo rm cuda
 sudo ln -s cuda-6.5/ cuda
 ```
+* Download `cuDNN 7.0` to use during compilation
 
 ### C. Download and Install TensorFlow
 ---------------------------------------
@@ -255,22 +256,24 @@ git checkout v0.12.1
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 /configure
 
-Do you wish to build TensorFlow with GPU support? [y/N] y
-GPU support will be enabled for TensorFlow
+CUDA support will be enabled for TensorFlow
 Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
-Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
-Please specify the location where CUDA  toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 7.0
+Please specify the location where CUDA 7.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: /usr/local/cuda-7.0
 Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
-Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
+Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda-7.0]: 
+libcudnn.so resolves to libcudnn.4
 Please specify a list of comma-separated Cuda compute capabilities you want to build with.
 You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
 Please note that each additional compute capability significantly increases your build time and binary size.
 [Default is: "3.5,5.2"]: 3.2
+
 INFO: Starting clean (this may take a while). Consider using --expunge_async if the clean takes more than several minutes.
 ......................
 INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
+ * Update CuDNN for TensorFlow
 
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
 ```shell
@@ -284,7 +287,6 @@ Configuration finished
  cp -R /usr/local/cuda-7.0/bin/ bin
  cp -R /usr/local/cuda-7.0/nvvm/ nvvm
 ```
- 
 * Edit the following files to avoid TensoFlow crashed ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)).
 
 ...* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
@@ -299,5 +301,16 @@ Configuration finished
   
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
+
+bazel build -c opt --jobs 1 --local_resources 1024,0.5,1.0 --verbose_failures //tensorflow/tools/pip_package:build_pip_package
+
  bazel build -c opt --local_resources 2048,0.5,1.0 --verbose_failures -s --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ````
+
+* Known Issues during compilation
+..1. Ran out of memory. Try to update `--local-resoures`
+
+```shell
+C++ Compilation Error
+--local_resources 1024,0.5,1.0
+```
