@@ -11,20 +11,20 @@ Build Tensorflow from source
 
 
 #### Summary
-1. Install dependencies
-2. Install protobuf
-3. Install grpc-java
-4. Install bazel
-5. Install Tensorflow
+1. [Install dependencies](#1-install-dependencies)
+2. [Install protobuf](#2-install-protobuf)
+3. [Install grpc-java](#3-install-grpc-java]
+4. [Install bazel](#4-install-bazel)
+5. [Install Tensorflow](#5-install-tensorflow)
 
 #### References
 * [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
 * [Tensorflow on ODROID-C2](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
 * [TensorFlow on Jetson TK1](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)
 
------------------------
-1. Install Dependencies
------------------------
+
+### 1. Install Dependencies
+---------------------------
 
 ```shell
 # For protobuf
@@ -254,7 +254,15 @@ git checkout v0.12.1
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
-/configure
+```
+
+ * Update CuDNN for TensorFlow
+```shell
+```
+
+* Replace all `lib-64` with `lib` and configure TF before installation.
+```shell
+./configure
 
 CUDA support will be enabled for TensorFlow
 Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
@@ -273,36 +281,53 @@ INFO: Starting clean (this may take a while). Consider using --expunge_async if 
 INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
- * Update CuDNN for TensorFlow
 
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
 ```shell
 #define IS_MOBILE_PLATFORM   <----- DELETE THIS LINE
 ```
- 
-* Update compiler using CUDA 7.0
-```shell
- cd third_party/gpus/cuda/
- rm -fr bin nvvm
- cp -R /usr/local/cuda-7.0/bin/ bin
- cp -R /usr/local/cuda-7.0/nvvm/ nvvm
-```
+
 * Edit the following files to avoid TensoFlow crashed ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)).
 
-...* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
+.* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
 ```shell
+#ifndef __arm__
+template struct functor::InflatePadAndShuffle<GPUDevice, Eigen::half, 4,
+                                              Eigen::DenseIndex>;
+template struct functor::InflatePadAndShuffle<GPUDevice, float, 4,
+                                              Eigen::DenseIndex>;
+#endif
 ```
-...* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
+
+* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
 ```shell
+#ifndef __arm__
+template struct functor::ShuffleAndReverse<GPUDevice, float, 4,
+                                           Eigen::DenseIndex>;
+template struct functor::ShuffleAndReverse<GPUDevice, Eigen::half, 4,
+                                           Eigen::DenseIndex>;
+#endif
+
 ```
-...* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
+* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
 ```shell
+static int TryToReadNumaNode(const string &pci_bus_id, int device_ordinal) {
+#ifdef __arm__
+  LOG(INFO) << "ARMV7 does not support NUMA - returning NUMA node zero";
+  return 0;
+#elif defined(__APPLE__)
+
+```
+
+* Fourth one: `tensorflow/core/common_runtime/gpu/process_state.cc`
+```shell
+
 ```
   
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
 
-bazel build -c opt --jobs 1 --local_resources 1024,0.5,1.0 --verbose_failures //tensorflow/tools/pip_package:build_pip_package
+bazel build -c opt --jobs 1 --local_resources 1024,0.5,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 
  bazel build -c opt --local_resources 2048,0.5,1.0 --verbose_failures -s --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ````
