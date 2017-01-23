@@ -307,8 +307,8 @@ template struct functor::ShuffleAndReverse<GPUDevice, float, 4,
 template struct functor::ShuffleAndReverse<GPUDevice, Eigen::half, 4,
                                            Eigen::DenseIndex>;
 #endif
-
 ```
+
 * Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
 ```shell
 static int TryToReadNumaNode(const string &pci_bus_id, int device_ordinal) {
@@ -316,25 +316,30 @@ static int TryToReadNumaNode(const string &pci_bus_id, int device_ordinal) {
   LOG(INFO) << "ARMV7 does not support NUMA - returning NUMA node zero";
   return 0;
 #elif defined(__APPLE__)
-
 ```
 
 * Fourth one: `tensorflow/core/common_runtime/gpu/process_state.cc`
 ```shell
-
+if (kCudaHostMemoryUseBFC) {
+      allocator =
+#ifdef __arm__
+          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 31,
+                           true /*allow_growth*/, "cuda_host_bfc" /*name*/);
+#else
+          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 36 /*64GB max*/,
+                           true /*allow_growth*/, "cuda_host_bfc" /*name*/);
+#endif
 ```
   
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
+bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+```
 
-bazel build -c opt --jobs 1 --local_resources 1024,0.5,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+### Known Issues during compilation
 
- bazel build -c opt --local_resources 2048,0.5,1.0 --verbose_failures -s --config=cuda //tensorflow/tools/pip_package:build_pip_package
-````
-
-* Known Issues during compilation
-..1. Ran out of memory. Try to update `--local-resoures`
+1. Ran out of memory. Try to update `--local-resoures`
 
 ```shell
-C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command--local_resources
+C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command --local_resources
 ```
