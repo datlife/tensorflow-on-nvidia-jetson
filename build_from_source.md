@@ -292,20 +292,16 @@ Configuration finished
 .* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
 ```shell
 #ifndef __arm__
-template struct functor::InflatePadAndShuffle<GPUDevice, Eigen::half, 4,
-                                              Eigen::DenseIndex>;
-template struct functor::InflatePadAndShuffle<GPUDevice, float, 4,
-                                              Eigen::DenseIndex>;
+template struct functor::InflatePadAndShuffle<GPUDevice, Eigen::half, 4, Eigen::DenseIndex>;
+template struct functor::InflatePadAndShuffle<GPUDevice, float, 4,Eigen::DenseIndex>;
 #endif
 ```
 
 * Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
 ```shell
 #ifndef __arm__
-template struct functor::ShuffleAndReverse<GPUDevice, float, 4,
-                                           Eigen::DenseIndex>;
-template struct functor::ShuffleAndReverse<GPUDevice, Eigen::half, 4,
-                                           Eigen::DenseIndex>;
+template struct functor::ShuffleAndReverse<GPUDevice, float, 4, Eigen::DenseIndex>;
+template struct functor::ShuffleAndReverse<GPUDevice, Eigen::half, 4, Eigen::DenseIndex>;
 #endif
 ```
 
@@ -323,11 +319,9 @@ static int TryToReadNumaNode(const string &pci_bus_id, int device_ordinal) {
 if (kCudaHostMemoryUseBFC) {
       allocator =
 #ifdef __arm__
-          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 31,
-                           true /*allow_growth*/, "cuda_host_bfc" /*name*/);
+          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 31, true /*allow_growth*/, "cuda_host_bfc" /*name*/);
 #else
-          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 36 /*64GB max*/,
-                           true /*allow_growth*/, "cuda_host_bfc" /*name*/);
+          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 36 /*64GB max*/, true /*allow_growth*/, "cuda_host_bfc" /*name*/);
 #endif
 ```
   
