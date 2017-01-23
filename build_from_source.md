@@ -324,7 +324,44 @@ if (kCudaHostMemoryUseBFC) {
           new BFCAllocator(new CUDAHostAllocator(se), 1LL << 36 /*64GB max*/, true /*allow_growth*/, "cuda_host_bfc" /*name*/);
 #endif
 ```
-  
+
+ * Fifth file :`tensorflow/core/kernels/cwise_op_gpu_select.cu.cc`
+ 
+ ````shell
+ # Around line 43
+#if !defined(EIGEN_HAS_INDEX_LIST)
+  //Eigen::array<int, 2> broadcast_dims{{ 1, all_but_batch }};
+Eigen::array<int, 2> broadcast_dims;
+broadcast_dims[0] = 1;
+broadcast_dims[1] = all_but_batch;
+// Eigen::Tensor<int, 2>::Dimensions reshape_dims{{ batch, 1 }};
+Eigen::Tensor<int, 2>::Dimensions reshape_dims;
+reshape_dims[0] = batch;
+reshape_dims[1] = 1;
+ #else
+     Eigen::IndexList<Eigen::type2index<1>, int> broadcast_dims;
+ ```
+ 
+ * Sixth file : `tensorflow/core/kernels/sparse_tensor_dense_matmul_op_gpu.cu.cc`
+ ````shell
+  #if !defined(EIGEN_HAS_INDEX_LIST)
+   // Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz{{ 1, nnz }};
+   // Eigen::array<int, 2> n_by_1{{ n, 1 }};
+   // Eigen::array<int, 1> reduce_on_rows{{ 0 }};
+   
+   Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz;
+   matrix_1_by_nnz[0] = 1;  
+   matrix_1_by_nnz[1] = nnz;
+   // Eigen::array<int, 2> n_by_1{{ n, 1 }};
+   Eigen::array<int, 2> n_by_1;
+   n_by_1[0] = n; 
+   n_by_1[1] = 1;
+   // Eigen::array<int, 1> reduce_on_rows{{ 0 }};
+   Eigen::array<int, 1> reduce_on_rows;
+   reduce_on_rows[0]= 0;
+ #else
+     Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
+ ```
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
