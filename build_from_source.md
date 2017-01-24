@@ -379,7 +379,23 @@ INFO: Elapsed time: 7153.308s, Critical Path: 333.40s
 
 ```
 
-### Known Issues during compilation
+6. Install TensorFlow
+---------------------
+
+* Build .whl package
+```shell
+bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+```
+
+* Install .whl package
+```shell
+sudo pip install /tmp/tensorflow_pkg/tensorflow-0.12.1-cp27-none-linux_armv7l.whl
+```
+
+* Congratulations! You have succesfully built TensorFlow from source on NVIDA Jetson TK1
+
+
+#### Known Issues during compilation
 
 1. Ran out of memory. Try to update `--local-resoures` where n1,n2,n3 is memroy,cpu_thread,i/o input
 
