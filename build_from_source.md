@@ -15,7 +15,8 @@ Build Tensorflow from source
 2. [Install protobuf](#2-install-protobuf)
 3. [Install grpc-java](#3-install-grpc-java)
 4. [Install bazel](#4-install-bazel)
-5. [Install Tensorflow](#5-install-tensorflow)
+5  Set CUDA v7.0 and CuDNN 4 as a compiler
+6. [Install Tensorflow](#5-install-tensorflow)
 
 #### References
 * [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
@@ -199,6 +200,36 @@ Available commands:
 ...
 ```
 
+### B. Set up `CUDA 7.0` and `cuDNN v4` as compiler for TensorFlow
+-------------------------------------------------------------------
+
+The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
+
+ * Download and install CUDA 7.0
+```shell
+wget http://developer.download.nvidia.com/embedded/L4T/r24_Release_v1.0/CUDA/cuda-repo-l4t-7-0-local_7.0-76_armhf.deb
+sudo dpkg -i cuda-repo-l4t-7-0-local_7.0-76_armhf.deb 
+sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
+```
+
+* Remove symlink `CUDA 7.0` created and link to `CUDA 6.5` instead
+```shell
+sudo rm cuda
+sudo ln -s cuda-6.5/ cuda
+```
+* Download `cuDNN 7.0` to use during compilation
+```shell
+# Download  cuDNN 4 and decompress
+/	
+# Saved the cuDNN for TK1
+sudp mv /usr/local/cuda/include/cudnn.h /usr/local/cuda/include/cudnn.h.old
+sudo mv ./cudnn.h /usr/local/cuda/include/cudnn.h
+sudo rm /usr/local/cuda/lib/libcudnn*
+sudo cp libcudnn* /usr/local/cuda/lib/
+```
+* Edit bash file
+
+
 5. Install TensorFlow
 ---------------------
 
@@ -223,24 +254,6 @@ sudo umount /dev/sda
 sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
-### B. Set up `CUDA 7.0` as compiler for TensorFlow
----------------------------------------------------
-
-The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
-
- * Download and install CUDA 7.0
-```shell
-wget http://developer.download.nvidia.com/embedded/L4T/r24_Release_v1.0/CUDA/cuda-repo-l4t-7-0-local_7.0-76_armhf.deb
-sudo dpkg -i cuda-repo-l4t-7-0-local_7.0-76_armhf.deb 
-sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
-```
-
-* Remove symlink `CUDA 7.0` created and link to `CUDA 6.5` instead
-```shell
-sudo rm cuda
-sudo ln -s cuda-6.5/ cuda
-```
-* Download `cuDNN 7.0` to use during compilation
 
 ### C. Download and Install TensorFlow
 ---------------------------------------
