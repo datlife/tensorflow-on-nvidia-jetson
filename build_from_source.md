@@ -215,18 +215,16 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 
 * Remove symlink `CUDA 7.0` created and link to `CUDA 6.5` instead
 ```shell
-sudo rm cuda
-sudo ln -s cuda-6.5/ cuda
+sudo rm /usr/local/cuda
+sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
 ```
 * Download `cuDNN 7.0` to use during compilation
 ```shell
 # Download  cuDNN 4 and decompress
 /	
-# Saved the cuDNN for TK1
-sudp mv /usr/local/cuda/include/cudnn.h /usr/local/cuda/include/cudnn.h.old
-sudo mv ./cudnn.h /usr/local/cuda/include/cudnn.h
-sudo rm /usr/local/cuda/lib/libcudnn*
-sudo cp libcudnn* /usr/local/cuda/lib/
+
+tar -xvf cudnn-7.0-linux-ARMv7-v4.0-prod.tgz 
+cd cudnn/cuda/
 ```
 * Edit bash file
 
@@ -270,9 +268,6 @@ git checkout v0.12.1
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 ```
 
- * Update CuDNN for TensorFlow
-```shell
-```
 
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
@@ -295,7 +290,21 @@ INFO: Starting clean (this may take a while). Consider using --expunge_async if 
 INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
+* Modify CUDA
+```shell
+cd ./third_party/gpus/cuda
+# Change CUDA 6.5 to CUDA 7.0 as compiler
+rm -rf bin nvvm
+cp -rf /usr/local/cuda-7.0/bin/ bin
+cp -rf /usr/local/cuda-7.0/nvvm/ nvvm
 
+# Change cuDNN v2 to cuDNN v4 as compiler
+rm include/cudnn.h
+sudo ln -s /usr/local/cuda-7.0/include/cudnn.h ./cudnn.h
+
+
+
+```
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
 ```shell
 #define IS_MOBILE_PLATFORM   <----- DELETE THIS LINE
