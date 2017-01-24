@@ -15,6 +15,7 @@ Build Tensorflow from source
 2. [Install protobuf](#2-install-protobuf)
 3. [Install grpc-java](#3-install-grpc-java)
 4. [Install bazel](#4-install-bazel)
+
 5  Set CUDA v7.0 and CuDNN 4 as a compiler
 6. [Install Tensorflow](#5-install-tensorflow)
 
