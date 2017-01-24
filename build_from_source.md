@@ -362,15 +362,27 @@ reshape_dims[1] = 1;
  #else
      Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
  ```
+
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+```	
+
+* If it is successfully buit, you should see something like this
+```shell
+
+At end of source: warning: routine is both "inline" and "noinline"
+
+Target //tensorflow/tools/pip_package:build_pip_package up-to-date:
+  bazel-bin/tensorflow/tools/pip_package/build_pip_package
+INFO: Elapsed time: 7153.308s, Critical Path: 333.40s
+
 ```
 
 ### Known Issues during compilation
 
-1. Ran out of memory. Try to update `--local-resoures`
+1. Ran out of memory. Try to update `--local-resoures` where n1,n2,n3 is memroy,cpu_thread,i/o input
 
 ```shell
-C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command --local_resources
+C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command -
 ```
