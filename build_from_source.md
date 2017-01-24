@@ -15,9 +15,10 @@ Build Tensorflow from source
 2. [Install protobuf](#2-install-protobuf)
 3. [Install grpc-java](#3-install-grpc-java)
 4. [Install bazel](#4-install-bazel)
-
-5  Set CUDA v7.0 and CuDNN 4 as a compiler
 6. [Install Tensorflow](#5-install-tensorflow)
+  * Download and configure tensorflow
+  * Set CUDA v7.0 and CuDNN 4 as a compiler
+  * Modify few library files to work on ARM device
 
 #### References
 * [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
@@ -244,8 +245,6 @@ sda           8:0    1  29.5G  0 disk 		 # <------ This is my usb
 `-sda1        8:1    1  29.5G  0 part [SWAP] 
 mmcblk0rpmb 179:16   0     4M  0 disk 
 mmcblk0     179:0    0  14.7G  0 disk 
-|-mmcblk0p1 179:1    0    14G  0 part /
-....
 ```
 * Unmount the disk and create swap disk
 ```shell
@@ -254,8 +253,8 @@ sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
 
-### C. Download and Install TensorFlow
----------------------------------------
+### B. Download and Configure TensorFlow
+----------------------------------------
 * Download TensorFlow and checkout v0.12.1
 ```shell
 git clone --recurse-submodules https://github.com/tensorflow/tensorflow
@@ -272,11 +271,10 @@ grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
 ./configure
-
 CUDA support will be enabled for TensorFlow
 Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
-Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 7.0
-Please specify the location where CUDA 7.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: /usr/local/cuda-7.0
+Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
+Please specify the location where CUDA 7.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
 Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
 Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda-7.0]: 
 libcudnn.so resolves to libcudnn.4
@@ -290,7 +288,9 @@ INFO: Starting clean (this may take a while). Consider using --expunge_async if 
 INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
-* Modify CUDA
+
+### C. Modify `CUDA`, `cuDNN` and few libraries
+-----------------------------------------------
 ```shell
 cd ./third_party/gpus/cuda
 # Change CUDA 6.5 to CUDA 7.0 as compiler
@@ -300,11 +300,11 @@ cp -rf /usr/local/cuda-7.0/nvvm/ nvvm
 
 # Change cuDNN v2 to cuDNN v4 as compiler
 rm include/cudnn.h
-sudo ln -s /usr/local/cuda-7.0/include/cudnn.h ./cudnn.h
-
-
-
+sudo ln -s /usr/local/cuda-7.0/include/cudnn.h include/cudnn.h
+rm lib/libcunn*
+cp /usr/local/cuda-7.0/lib/libcudnn* ./lib
 ```
+
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
 ```shell
 #define IS_MOBILE_PLATFORM   <----- DELETE THIS LINE
@@ -348,58 +348,51 @@ if (kCudaHostMemoryUseBFC) {
 #endif
 ```
 
- * Fifth file :`tensorflow/core/kernels/cwise_op_gpu_select.cu.cc`
+* Fifth file :`tensorflow/core/kernels/cwise_op_gpu_select.cu.cc`
  
- ````shell
+````shell
  # Around line 43
 #if !defined(EIGEN_HAS_INDEX_LIST)
-  //Eigen::array<int, 2> broadcast_dims{{ 1, all_but_batch }};
-Eigen::array<int, 2> broadcast_dims;
-broadcast_dims[0] = 1;
-broadcast_dims[1] = all_but_batch;
-// Eigen::Tensor<int, 2>::Dimensions reshape_dims{{ batch, 1 }};
-Eigen::Tensor<int, 2>::Dimensions reshape_dims;
-reshape_dims[0] = batch;
-reshape_dims[1] = 1;
+	//Eigen::array<int, 2> broadcast_dims{{ 1, all_but_batch }};
+	Eigen::array<int, 2> broadcast_dims;
+	broadcast_dims[0] = 1;
+	broadcast_dims[1] = all_but_batch;
+	// Eigen::Tensor<int, 2>::Dimensions reshape_dims{{ batch, 1 }};
+	Eigen::Tensor<int, 2>::Dimensions reshape_dims;
+	reshape_dims[0] = batch;
+	reshape_dims[1] = 1;
  #else
-     Eigen::IndexList<Eigen::type2index<1>, int> broadcast_dims;
- ```
+    Eigen::IndexList<Eigen::type2index<1>, int> broadcast_dims;
+```
  
- * Sixth file : `tensorflow/core/kernels/sparse_tensor_dense_matmul_op_gpu.cu.cc`
- ````shell
-  #if !defined(EIGEN_HAS_INDEX_LIST)
-   // Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz{{ 1, nnz }};
-   // Eigen::array<int, 2> n_by_1{{ n, 1 }};
-   // Eigen::array<int, 1> reduce_on_rows{{ 0 }};
-   
-   Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz;
-   matrix_1_by_nnz[0] = 1;  
-   matrix_1_by_nnz[1] = nnz;
-   // Eigen::array<int, 2> n_by_1{{ n, 1 }};
-   Eigen::array<int, 2> n_by_1;
-   n_by_1[0] = n; 
-   n_by_1[1] = 1;
-   // Eigen::array<int, 1> reduce_on_rows{{ 0 }};
-   Eigen::array<int, 1> reduce_on_rows;
-   reduce_on_rows[0]= 0;
- #else
-     Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
- ```
+* Sixth file : `tensorflow/core/kernels/sparse_tensor_dense_matmul_op_gpu.cu.cc`
+````shell
+#if !defined(EIGEN_HAS_INDEX_LIST)
+	// Eigen::array<int, 1> reduce_on_rows{{ 0 }};
+	Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz;
+	matrix_1_by_nnz[0] = 1;  
+	matrix_1_by_nnz[1] = nnz;
+	// Eigen::array<int, 2> n_by_1{{ n, 1 }};
+	Eigen::array<int, 2> n_by_1;
+	n_by_1[0] = n; 
+	n_by_1[1] = 1;
+	// Eigen::array<int, 1> reduce_on_rows{{ 0 }};
+	Eigen::array<int, 1> reduce_on_rows;
+	reduce_on_rows[0]= 0;
+#else
+Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
+```
 
 * Ready? This will take a long time. Get yourself a cup of coffee. ;)
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```	
 
-* If it is successfully buit, you should see something like this
+* If it is successfully built, you should see something like this
 ```shell
-
-At end of source: warning: routine is both "inline" and "noinline"
-
 Target //tensorflow/tools/pip_package:build_pip_package up-to-date:
   bazel-bin/tensorflow/tools/pip_package/build_pip_package
 INFO: Elapsed time: 7153.308s, Critical Path: 333.40s
-
 ```
 
 6. Install TensorFlow
