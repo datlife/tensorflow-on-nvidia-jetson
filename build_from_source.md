@@ -222,13 +222,11 @@ sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
 * Download `cuDNN 7.0` to use during compilation
 ```shell
 # Download  cuDNN 4 and decompress
-/	
-
 tar -xvf cudnn-7.0-linux-ARMv7-v4.0-prod.tgz 
 cd cudnn/cuda/
-```
-* Edit bash file
 
+# Will use this later in next step
+```
 
 5. Install TensorFlow
 ---------------------
@@ -276,8 +274,7 @@ Please specify which gcc should be used by nvcc as the host compiler. [Default i
 Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
 Please specify the location where CUDA 7.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
 Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
-Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda-7.0]: 
-libcudnn.so resolves to libcudnn.4
+Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda-6.5]: 
 Please specify a list of comma-separated Cuda compute capabilities you want to build with.
 You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
 Please note that each additional compute capability significantly increases your build time and binary size.
@@ -291,6 +288,8 @@ Configuration finished
 
 ### C. Modify `CUDA`, `cuDNN` and few libraries
 -----------------------------------------------
+* The trick is to fool TensorFlow after the configuration finished. By now, Bazel still uses CUDA 6.5 and cuDNN v2 as main compiler stored in /third_party/gpus/cuda/. We will copy cuda-7.0 compiler from previous step into these folders.
+
 ```shell
 cd ./third_party/gpus/cuda
 # Change CUDA 6.5 to CUDA 7.0 as compiler
@@ -383,10 +382,29 @@ if (kCudaHostMemoryUseBFC) {
 Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
 ```
 
-* Ready? This will take a long time. Get yourself a cup of coffee. ;)
+* 1st Installation. As having mentioned by [cudamusing](), we will wait for first fail so that we could configure the `Macro.h` file.
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
-```	
+```
+
+* 2nd Installation. When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
+```shell
+vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h
+# Around line 400
+
+// Does the compiler support variadic templates?
+#ifndef EIGEN_HAS_VARIADIC_TEMPLATES
+#if EIGEN_MAX_CPP_VER>=11 && (__cplusplus > 199711L || EIGEN_COMP_MSVC >= 1900) \
+# --> remove this//  && (!defined(__NVCC__) || !EIGEN_ARCH_ARM_OR_ARM64 || (defined __CUDACC_VER__ && __CUDACC_VER__ >= 80000) )
+// ^^ Disable the use of variadic templates when compiling with versions of nvcc older than 8.0 on ARM devices:
+ //    this prevents nvcc from crashing when compiling Eigen on Tegra X1
+#define EIGEN_HAS_VARIADIC_TEMPLATES 1
+
+
+# After finished, save the file and restart the build
+bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+```
+
 
 * If it is successfully built, you should see something like this
 ```shell
