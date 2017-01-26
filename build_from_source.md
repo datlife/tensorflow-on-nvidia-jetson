@@ -273,21 +273,12 @@ patch -p1 < ../tensorflow_0.12.1_jetsontk1.patch
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 ```
 
-* Replace all `lib-64` with `lib` and configure TF before installation.
+* Configure TF before installation (~./.bashrc and cuDNN is set up correctly).
 ```shell
 ./configure
 ...
-CUDA support will be enabled for TensorFlow
-Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
-Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
-Please specify the location where CUDA 7.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]: 
-Please specify the Cudnn version you want to use. [Leave empty to use system default]: 
-Please specify the location where cuDNN  library is installed. Refer to README.md for more details. [Default is /usr/local/cuda-6.5]: 
-Please specify a list of comma-separated Cuda compute capabilities you want to build with.
-You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
 Please note that each additional compute capability significantly increases your build time and binary size.
-[Default is: "3.5,5.2"]: 3.2
-
+[Default is: "3.5,5.2"]: **`3.2`**
 INFO: Starting clean (this may take a while). Consider using --expunge_async if the clean takes more than several minutes.
 ......................
 INFO: All external dependencies fetched successfully.
@@ -305,16 +296,15 @@ bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --
 * 2nd Installation. When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
 ```shell
 vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h
-# Around line 400
 
-// Does the compiler support variadic templates?
 #ifndef EIGEN_HAS_VARIADIC_TEMPLATES
 #if EIGEN_MAX_CPP_VER>=11 && (__cplusplus > 199711L || EIGEN_COMP_MSVC >= 1900) \
+
 // --> `this`  && (!defined(__NVCC__) || !EIGEN_ARCH_ARM_OR_ARM64 || (defined __CUDACC_VER__ && __CUDACC_VER__ >= 80000) )
+
 // ^^ Disable the use of variadic templates when compiling with versions of nvcc older than 8.0 on ARM devices:
  //    this prevents nvcc from crashing when compiling Eigen on Tegra X1
 #define EIGEN_HAS_VARIADIC_TEMPLATES 1
-
 
 # After finished, save the file and restart the build
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
