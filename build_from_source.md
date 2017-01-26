@@ -15,10 +15,11 @@ Build Tensorflow from source
 2. [Install protobuf](#2-install-protobuf)
 3. [Install grpc-java](#3-install-grpc-java)
 4. [Install bazel](#4-install-bazel)
-6. [Install Tensorflow](#5-install-tensorflow)
-  * Download and configure tensorflow
+5. [Build Tensorflow](#5-build-tensorflow)
+  * Create Swap Disk
   * Set CUDA v7.0 and CuDNN 4 as a compiler
-  * Modify few library files to work on ARM device
+  * Build TensorFlow
+ 6. [Install Tensorflow](#6-install-tensorflow)
 
 #### References
 * [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
@@ -229,12 +230,13 @@ cd cudnn/cuda/
 # Will use this later in next step
 ```
 
-5. Install TensorFlow
+5. Build TensorFlow
 ---------------------
 
-### A. Create swap disk
- ----------------------
-For safety of overloading the disk, people suggest to use external swap disk (USB) to install TensorFlow.
+#### A. Create swap disk
+ -----------------------
+For safety of overloading the memory, people suggest to use external swap disk (USB) to install TensorFlow.
+
 * Find the USB path
 ```shell
 lsblk
@@ -252,8 +254,8 @@ sudo mkswap /dev/sda
 sudo swapon /dev/sda 
 ```
 
-### B. Download and Configure TensorFlow
-----------------------------------------
+#### B. Download and Configure TensorFlow
+-----------------------------------------
 * Download TensorFlow and checkout v0.12.1
 ```shell
 git clone --recurse-submodules https://github.com/tensorflow/tensorflow
@@ -288,9 +290,15 @@ INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
 
-### C. Modify few libraries
----------------------------
+#### C. Modify few libraries
+----------------------------
+* Apply the patch for TensorFlow v0.12.1. Please note that if you are building different version. The patch will not work. Basically, we eddited some files in the tensorflow source so it allows us to compile on jetson TK1.
+```shell
+patch -p1 < ../tensorflow_0.12.1_jetsontk1.patch
+```
 
+#### D. Install TensorFlow
+--------------------------
 
 * 1st Installation. As having mentioned by [cudamusing](), we will wait for first fail so that we could configure the `Macro.h` file.
 ```shell
