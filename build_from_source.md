@@ -19,7 +19,7 @@ Build Tensorflow from source
   * Create Swap Disk
   * Set CUDA v7.0 and CuDNN 4 as a compiler
   * Build TensorFlow
- 6. [Install Tensorflow](#6-install-tensorflow)
+6. [Install Tensorflow](#6-install-tensorflow)
 
 #### References
 * [Tensorflow on Rasberry Pi 3](https://www.neotitans.net/install-tensorflow-on-odroid-c2.html)
