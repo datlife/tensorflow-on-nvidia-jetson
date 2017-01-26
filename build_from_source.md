@@ -288,12 +288,12 @@ Configuration finished
 #### C. Install TensorFlow
 --------------------------
 
-* 1st Installation. As having mentioned by [cudamusing](), we will wait for **first failure** so that we could configure the `Macro.h` file.
+* First Installation: wait for failure to edit `Macro.h` file (mentioned by [cudamusing]() )
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```
 
-* 2nd Installation. When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
+* When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
 ```shell
 vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h
 
@@ -305,11 +305,12 @@ vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen
 // ^^ Disable the use of variadic templates when compiling with versions of nvcc older than 8.0 on ARM devices:
  //    this prevents nvcc from crashing when compiling Eigen on Tegra X1
 #define EIGEN_HAS_VARIADIC_TEMPLATES 1
-
-# After finished, save the file and restart the build
-bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```
 
+* Second Installation
+```shell
+bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+```
 
 * If it is successfully built, you should see something like this
 ```shell
@@ -325,12 +326,10 @@ INFO: Elapsed time: 7153.308s, Critical Path: 333.40s
 ```shell
 bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 ```
-
 * Install .whl package
 ```shell
 sudo pip install /tmp/tensorflow_pkg/tensorflow-0.12.1-cp27-none-linux_armv7l.whl
 ```
-
 * Congratulations! You have succesfully built TensorFlow from source on NVIDA Jetson TK1
 
 
