@@ -218,6 +218,8 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 ```shell
 sudo rm /usr/local/cuda
 sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
+sudo ln -s /usr/local/cuda-6.5/lib/libcudnn.so /usr/local/cuda-6.5/lib/libcudnn.so.2
+
 ```
 * Download `cuDNN 7.0` to use during compilation
 ```shell
@@ -286,23 +288,8 @@ INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
 
-### C. Modify `CUDA`, `cuDNN` and few libraries
------------------------------------------------
-* The trick is to fool TensorFlow after the configuration finished. By now, Bazel still uses CUDA 6.5 and cuDNN v2 as main compiler stored in /third_party/gpus/cuda/. We will copy cuda-7.0 compiler from previous step into these folders.
-
-```shell
-cd ./third_party/gpus/cuda
-# Change CUDA 6.5 to CUDA 7.0 as compiler
-rm -rf bin nvvm
-cp -rf /usr/local/cuda-7.0/bin/ bin
-cp -rf /usr/local/cuda-7.0/nvvm/ nvvm
-
-# Change cuDNN v2 to cuDNN v4 as compiler
-rm include/cudnn.h
-sudo ln -s /usr/local/cuda-7.0/include/cudnn.h include/cudnn.h
-rm lib/libcunn*
-cp /usr/local/cuda-7.0/lib/libcudnn* ./lib
-```
+### C. Modify few libraries
+---------------------------
 
 * Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
 ```shell
@@ -385,6 +372,7 @@ Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
 * 1st Installation. As having mentioned by [cudamusing](), we will wait for first fail so that we could configure the `Macro.h` file.
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/cc:tutorials_example_trainer
 ```
 
 * 2nd Installation. When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
