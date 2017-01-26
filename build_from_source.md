@@ -68,6 +68,7 @@ sudo make install
 ```
 
 However, we need older version protobuf v3.0.0-beta-4 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
+
  * Build `protobuf 3.0.0-beta2`
 ```shell
 git checkout v3.0.0-beta-2
@@ -76,6 +77,7 @@ LDFLAGS=-static ./configure --prefix=$(pwd)/../
 sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
 make -j 4
 ```
+
 * Check your protobuf installation. It should say `libprotoc 3.1.0`
 ```shell
 protoc --version
@@ -83,17 +85,18 @@ protoc --version
 
 3. Install grpc-java
 --------------------
-
 * Download and checkout v0.15.0
 ```shell
 cd ~ && git clone https://github.com/grpc/grpc-java.git | cd grpc-java
 git checkout v0.15.0
 ```
+
 * Edit file `grpc-java\compiler\build.gradle` so it could build on Linux ARM32
 ```shell
 cd ..\compiler
 vim build.gradle
 ```
+
 * Add the following lines to the file
 ```shell
 # you can show line numbers in vim by :set number
@@ -115,12 +118,13 @@ vim build.gradle
 # Edit the linkers around lines 100. Removes and replace with
     linker.args "-static", "-lprotoc", "-lprotobuf", "-static-libgcc",
                 "-static-libstdc++", "-lpthread", "-s"
-
 ```
+
 * Install 'grpc-java' using `protobuf` of the system
 ```shell
 CXXFLAGS="-I$(pwd)/../include" LDFLAGS="-L$(pwd)/../lib" ./gradlew java_pluginExecutable -Pprotoc=$(pwd)/../bin/protoc
 ```
+
 * You should see something like this
 ```shell
 *** Building codegen requires Protobuf version 3.0.0-beta-3
@@ -128,13 +132,9 @@ CXXFLAGS="-I$(pwd)/../include" LDFLAGS="-L$(pwd)/../lib" ./gradlew java_pluginEx
 :grpc-compiler:compileJava_pluginExecutableJava_pluginCpp UP-TO-DATE
 :grpc-compiler:linkJava_pluginExecutable UP-TO-DATE
 :grpc-compiler:java_pluginExecutable UP-TO-DATE
-
 BUILD SUCCESSFUL
-
 Total time: 16.264 secs
-
 This build could be faster, please consider using the Gradle Daemon: https://docs.gradle.org/2.13/userguide/gradle_daemon.html
-
 ```
 
 4. Install bazel
@@ -146,12 +146,14 @@ cd ~
 wget https://github.com/bazelbuild/bazel/releases/download/0.4.3/bazel-0.4.3-dist.zip
 unzip -d bazel bazel-0.4.3-dist.zip
 ```
+
 * Configure file `./compile.sh`:
 ```shell
 vim ./compile.sh
 # Around line 30. Change ${VERBOSE:=no} to ${VERBOSE:=yes}
 ${VERBOSE:=yes}
 ```
+
 * Configure file `tools/cpp/cc_configure.bzl` . The issue has been discuess on [here](https://github.com/bazelbuild/bazel/issues/1264)
 ```shell
 # Add an additional if statement to  _get_cpu_value()
@@ -175,18 +177,18 @@ INFO:    ./compile.sh compile /path/to/bazel
  ......
  ......# Wait around 5-10 mins
  
-
 Target //src:bazel up-to-date: bazel-bin/src/bazel
 INFO: Elapsed time: 593.067s, Critical Path: 573.93s
 WARNING: /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE:1: Workspace name in /tmp/bazel_O9OVPiDR/out/external/bazel_tools/WORKSPACE (@io_bazel) does not match the name given in the repository's definition (@bazel_tools); this will cause a build error in future versions.
 
 Build successful! Binary is here: /home/ubuntu/bazel/output/bazel
-
 ```
+
  * Copy `bazel` to `/usr/local/bin`.
 ```shell
  sudo cp output/bazel /usr/local/bin/bazel
 ``` 
+
  * Verify that bazel is working
 ```shell
  $ bazel
@@ -204,7 +206,6 @@ Available commands:
 
 ### B. Set up `CUDA 7.0` and `cuDNN v4` as compiler for TensorFlow
 -------------------------------------------------------------------
-
 The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
 
  * Download and install CUDA 7.0
@@ -218,8 +219,6 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 ```shell
 sudo rm /usr/local/cuda
 sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
-sudo ln -s /usr/local/cuda-6.5/lib/libcudnn.so /usr/local/cuda-6.5/lib/libcudnn.so.2
-
 ```
 * Download `cuDNN 7.0` to use during compilation
 ```shell
@@ -271,6 +270,7 @@ grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
 ./configure
+...
 CUDA support will be enabled for TensorFlow
 Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
 Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 
@@ -291,83 +291,6 @@ Configuration finished
 ### C. Modify few libraries
 ---------------------------
 
-* Edit `tensorflow/core/platform/platform.h` as following because it possibly causes error like [this](https://github.com/tensorflow/tensorflow/issues/3469)
-```shell
-#define IS_MOBILE_PLATFORM   <----- DELETE THIS LINE
-```
-
-* Edit the following files to avoid TensoFlow crashed ([here](http://cudamusing.blogspot.com/2016/06/tensorflow-08-on-jetson-tk1.html)).
-
-.* First one : `tensorflow/core/kernels/conv_ops_gpu_2.cu.cc`
-```shell
-#ifndef __arm__
-template struct functor::InflatePadAndShuffle<GPUDevice, Eigen::half, 4, Eigen::DenseIndex>;
-template struct functor::InflatePadAndShuffle<GPUDevice, float, 4,Eigen::DenseIndex>;
-#endif
-```
-
-* Second one : `tensorflow/core/kernels/conv_ops_gpu_3.cu.cc`
-```shell
-#ifndef __arm__
-template struct functor::ShuffleAndReverse<GPUDevice, float, 4, Eigen::DenseIndex>;
-template struct functor::ShuffleAndReverse<GPUDevice, Eigen::half, 4, Eigen::DenseIndex>;
-#endif
-```
-
-* Third one : `tensorflow/stream_executor/cuda/cuda_gpu_executor.cc`
-```shell
-static int TryToReadNumaNode(const string &pci_bus_id, int device_ordinal) {
-#ifdef __arm__
-  LOG(INFO) << "ARMV7 does not support NUMA - returning NUMA node zero";
-  return 0;
-#elif defined(__APPLE__)
-```
-
-* Fourth one: `tensorflow/core/common_runtime/gpu/process_state.cc`
-```shell
-if (kCudaHostMemoryUseBFC) {
-      allocator =
-#ifdef __arm__
-          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 31, true /*allow_growth*/, "cuda_host_bfc" /*name*/);
-#else
-          new BFCAllocator(new CUDAHostAllocator(se), 1LL << 36 /*64GB max*/, true /*allow_growth*/, "cuda_host_bfc" /*name*/);
-#endif
-```
-
-* Fifth file :`tensorflow/core/kernels/cwise_op_gpu_select.cu.cc`
- 
-````shell
- # Around line 43
-#if !defined(EIGEN_HAS_INDEX_LIST)
-	//Eigen::array<int, 2> broadcast_dims{{ 1, all_but_batch }};
-	Eigen::array<int, 2> broadcast_dims;
-	broadcast_dims[0] = 1;
-	broadcast_dims[1] = all_but_batch;
-	// Eigen::Tensor<int, 2>::Dimensions reshape_dims{{ batch, 1 }};
-	Eigen::Tensor<int, 2>::Dimensions reshape_dims;
-	reshape_dims[0] = batch;
-	reshape_dims[1] = 1;
- #else
-    Eigen::IndexList<Eigen::type2index<1>, int> broadcast_dims;
-```
- 
-* Sixth file : `tensorflow/core/kernels/sparse_tensor_dense_matmul_op_gpu.cu.cc`
-````shell
-#if !defined(EIGEN_HAS_INDEX_LIST)
-	// Eigen::array<int, 1> reduce_on_rows{{ 0 }};
-	Eigen::Tensor<int, 2>::Dimensions matrix_1_by_nnz;
-	matrix_1_by_nnz[0] = 1;  
-	matrix_1_by_nnz[1] = nnz;
-	// Eigen::array<int, 2> n_by_1{{ n, 1 }};
-	Eigen::array<int, 2> n_by_1;
-	n_by_1[0] = n; 
-	n_by_1[1] = 1;
-	// Eigen::array<int, 1> reduce_on_rows{{ 0 }};
-	Eigen::array<int, 1> reduce_on_rows;
-	reduce_on_rows[0]= 0;
-#else
-Eigen::IndexList<Eigen::type2index<1>, int> matrix_1_by_nnz;
-```
 
 * 1st Installation. As having mentioned by [cudamusing](), we will wait for first fail so that we could configure the `Macro.h` file.
 ```shell
