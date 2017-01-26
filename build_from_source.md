@@ -293,9 +293,8 @@ Configuration finished
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```
 
-* When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
+* When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash dir could be different than yours.
 ```shell
-vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h
 
 #ifndef EIGEN_HAS_VARIADIC_TEMPLATES
 #if EIGEN_MAX_CPP_VER>=11 && (__cplusplus > 199711L || EIGEN_COMP_MSVC >= 1900) \
@@ -326,6 +325,7 @@ INFO: Elapsed time: 7153.308s, Critical Path: 333.40s
 ```shell
 bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 ```
+
 * Install .whl package
 ```shell
 sudo pip install /tmp/tensorflow_pkg/tensorflow-0.12.1-cp27-none-linux_armv7l.whl
