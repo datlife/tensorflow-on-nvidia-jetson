@@ -263,11 +263,15 @@ cd tensorflow
 git checkout v0.12.1
 ```
 
+* Apply the patch for TensorFlow v0.12.1. Please note that if you are building different version. The patch will not work. Basically, we eddited some files in the tensorflow source so it allows us to compile on jetson TK1.
+```shell
+patch -p1 < ../tensorflow_0.12.1_jetsontk1.patch
+```
+
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
 grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
 ```
-
 
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
@@ -290,20 +294,12 @@ INFO: All external dependencies fetched successfully.
 Configuration finished
 ``` 
 
-#### C. Modify few libraries
-----------------------------
-* Apply the patch for TensorFlow v0.12.1. Please note that if you are building different version. The patch will not work. Basically, we eddited some files in the tensorflow source so it allows us to compile on jetson TK1.
-```shell
-patch -p1 < ../tensorflow_0.12.1_jetsontk1.patch
-```
-
-#### D. Install TensorFlow
+#### C. Install TensorFlow
 --------------------------
 
-* 1st Installation. As having mentioned by [cudamusing](), we will wait for first fail so that we could configure the `Macro.h` file.
+* 1st Installation. As having mentioned by [cudamusing](), we will wait for **first failure** so that we could configure the `Macro.h` file.
 ```shell
 bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
-bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/cc:tutorials_example_trainer
 ```
 
 * 2nd Installation. When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash number `ad1...` could be different than yours.
@@ -314,7 +310,7 @@ vim ~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen
 // Does the compiler support variadic templates?
 #ifndef EIGEN_HAS_VARIADIC_TEMPLATES
 #if EIGEN_MAX_CPP_VER>=11 && (__cplusplus > 199711L || EIGEN_COMP_MSVC >= 1900) \
-# --> remove this//  && (!defined(__NVCC__) || !EIGEN_ARCH_ARM_OR_ARM64 || (defined __CUDACC_VER__ && __CUDACC_VER__ >= 80000) )
+// --> `this`  && (!defined(__NVCC__) || !EIGEN_ARCH_ARM_OR_ARM64 || (defined __CUDACC_VER__ && __CUDACC_VER__ >= 80000) )
 // ^^ Disable the use of variadic templates when compiling with versions of nvcc older than 8.0 on ARM devices:
  //    this prevents nvcc from crashing when compiling Eigen on Tegra X1
 #define EIGEN_HAS_VARIADIC_TEMPLATES 1
