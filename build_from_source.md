@@ -327,6 +327,10 @@ sudo pip install /tmp/tensorflow_pkg/tensorflow-0.12.1-cp27-none-linux_armv7l.wh
 ```shell
 sudo rm /usr/local/cuda
 sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
+
+# Update symlinks lib*.7.0 to local one
+
+# Watch out the driver cuda-driver-dev-6-5
 ```
 
 * Congratulations! You have succesfully built TensorFlow from source on NVIDA Jetson TK1
