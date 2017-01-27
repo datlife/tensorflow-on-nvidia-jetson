@@ -214,18 +214,14 @@ sudo dpkg -i cuda-repo-l4t-7-0-local_7.0-76_armhf.deb
 sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 ```
 
-* Remove symlink `CUDA 7.0` created and link to `CUDA 6.5` instead
-```shell
-sudo rm /usr/local/cuda
-sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
-```
 * Download `cuDNN 7.0` to use during compilation
 ```shell
 # Download  cuDNN 4 and decompress
 tar -xvf cudnn-7.0-linux-ARMv7-v4.0-prod.tgz 
 cd cudnn/cuda/
 
-# Will use this later in next step
+# Copy to cuda folder
+sudo cp ./cudnn/cuda/include/cudnn.h /usr/local/cuda/include/
 ```
 
 5. Build TensorFlow
@@ -325,12 +321,25 @@ bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 ```shell
 sudo pip install /tmp/tensorflow_pkg/tensorflow-0.12.1-cp27-none-linux_armv7l.whl
 ```
+
+
+* Remove symlink `CUDA 7.0` in order to run Tensorflow with `CUDA 6.5`
+```shell
+sudo rm /usr/local/cuda
+sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
+```
+
 * Congratulations! You have succesfully built TensorFlow from source on NVIDA Jetson TK1
 
 
 #### Known Issues during compilation
 
-1. Ran out of memory. Try to update `--local-resoures` where n1,n2,n3 is memroy,cpu_thread,i/o input
+1. Error with NVIDIA DRIVER. I got some weird error such as `could not find cuDevicePrimaryCtxSetFlags in libcuda` . The issue I suspect due to incompatible driver.
+```
+sudo apt-get install libcuda1-367
+
+```
+2. Ran out of memory. Try to update `--local-resoures` where n1,n2,n3 is memroy,cpu_thread,i/o input
 
 ```shell
 C++ compilation of rule '//tensorflow/core/kernels:svd_op' failed: gcc failed: error executing command -
