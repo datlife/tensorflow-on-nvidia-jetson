@@ -29,6 +29,13 @@ Build Tensorflow from source
 
 ### 1. Install Dependencies
 ---------------------------
+* Add Java JDK 8.0
+```shell
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+```
+
 ```shell
 # For protobuf
 sudo apt-get install autoconf automake libtool curl make g++ unzip maven
