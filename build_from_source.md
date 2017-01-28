@@ -65,6 +65,17 @@ git clone https://github.com/google/protobuf.git
 cd protobuf
 git checkout v3.1.0
 ```
+ * If download link gmock is failed
+```shell
+vim WORKSPACE
+vim autogen.sh
+
+# Update this link 
+http://pkgs.fedoraproject.org/repo/pkgs/gmock/gmock-1.7.0.zip/073b984d8798ea1594f5e44d85b20d66/gmock-1.7.0.zip
+
+# https://github.com/grpc/grpc/issues/7952
+
+```
  * Build and Install `protobuf 3.1.0`
 ```shell
 ./autogen.sh
