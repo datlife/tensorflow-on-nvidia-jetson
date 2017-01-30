@@ -47,7 +47,6 @@ sudo pip install wheel
 2. Install protobuf
 -------------------
 
-In order to install grpc-java, we need new version of protobuf
  * Download and checkout 3.1.0 version
 ```shell
 cd $HOME
@@ -55,27 +54,19 @@ git clone https://github.com/google/protobuf.git
 cd protobuf
 git checkout v3.1.0
 ```
- * If download link gmock is failed
-```shell
-vim WORKSPACE
-vim autogen.sh
 
-# Update this link 
-http://pkgs.fedoraproject.org/repo/pkgs/gmock/gmock-1.7.0.zip/073b984d8798ea1594f5e44d85b20d66/gmock-1.7.0.zip
-
-# https://github.com/grpc/grpc/issues/7952
-
-```
- * Build and Install `protobuf 3.1.0`
+* Build and Install `protobuf 3.1.0`
 ```shell
 ./autogen.sh
 LDFLAGS=-static ./configure --prefix=$(pwd)/../
 sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
+# Take around
 make -j 4
+
 sudo make install
 ```
 
-However, we need older version protobuf v3.0.0-beta-4 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
+However, we need older version protobuf v3.0.0-beta-2 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
 
  * Build `protobuf 3.0.0-beta2`
 ```shell
