@@ -29,29 +29,19 @@ Build Tensorflow from source
 
 ### 1. Install Dependencies
 ---------------------------
-* Add Java JDK 8.0
 ```shell
+* Install Java JDK 8.0
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get install oracle-java8-installer
-```
 
-```shell
-# For protobuf
-sudo apt-get install autoconf automake libtool curl make g++ unzip maven
-
-# For bazel
-sudo will-be-updated
+# For protobuf & bazel. We will also need `maven`, but I rather install it after this step.
+sudo apt-get install git zip unzip autoconf automake libtool curl zlib1g-dev  
 
 # For TensorFlow (I assumed you are using python 2 on Jetson TK1. If you are using python 3, I am not sure if the rest will work)
 # For Python 2.7
 sudo apt-get install python-pip python-numpy swig python-dev
 sudo pip install wheel
-
-# Optimization Flags
-sudo apt-get install gcc-4.8 g++-4.8
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
 ```
 
 2. Install protobuf
@@ -180,12 +170,14 @@ if machine_cpu in ["arm", "armv7l", "aarch64"]:
 	return "arm"
 return "k8" if machine in ["amd64", "x86_64", "x64"] else "piii"
 ```
+
  * Build `bazel` with `protoc v3.0.0-beta-2` and `grpc-java`
 ```shell
 PROTOC=../protobuf/src/protoc
 GRPC_JAVA_PLUGIN=../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java
 sudo ./compile.sh
 ```
+
  * Result output
 ```shell
  You can skip this first step by providing a path to the bazel binary as second argument:
@@ -302,7 +294,7 @@ Configuration finished
 
 * First Installation: wait for failure to edit `Macro.h` file (mentioned by [cudamusing]() )
 ```shell
-bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+bazel build -c opt --jobs 1 --local_resources 1800,0.5,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```
 
 * When it failed, edit `Marco.h` file in ` `~/.cache/bazel/_bazel_ubuntu/ad1e09741bb4109fbc70ef8216b59ee2/external/eigen_archive/Eigen/src/Core/util/Macros.h` . Notice my hash dir could be different than yours.
@@ -317,7 +309,7 @@ bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --
 
 * Second Installation
 ```shell
-bazel build -c opt --jobs 1 --local_resources 1800,2.0,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
+bazel build -c opt --jobs 1 --local_resources 1800,0.5,1.0 --verbose_failures --config=cuda //tensorflow/tools/pip_package:build_pip_package
 ```
 
 * If it is successfully built, you should see something like this
