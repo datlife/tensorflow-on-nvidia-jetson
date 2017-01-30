@@ -345,14 +345,52 @@ sudo ln -s /usr/local/cuda-6.5/ /usr/local/cuda
 
 * Congratulations! You have succesfully built TensorFlow from source on NVIDA Jetson TK1
 
+* Test Tensorflow
+```shell
+# https://www.tensorflow.org/how_tos/using_gpu/
+python
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
+b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
+c = tf.matmul(a, b)
+# Creates a session with log_device_placement set to True.
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+# Runs the op.
+print sess.run(c)
+
+# Expected Output
+I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:872] ARMV7 does not support NUMA -returning NUMA node zero
+I tensorflow/core/common_runtime/gpu/gpu_init.cc:102] Found device 0 with properties: 
+name: GK20A
+major: 3 minor: 2 memoryClockRate (GHz) 0.852
+pciBusID 0000:00:00.0
+Total memory: 1.85GiB
+Free memory: 199.25MiB
+I tensorflow/core/common_runtime/gpu/gpu_init.cc:126] DMA: 0 
+I tensorflow/core/common_runtime/gpu/gpu_init.cc:136] 0:   Y 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GK20A, pci bus id: 0000:00:00.0)
+Device mapping:
+/job:localhost/replica:0/task:0/gpu:0 -> device: 0, name: GK20A, pci bus id: 0000:00:00.0
+I tensorflow/core/common_runtime/direct_session.cc:149] Device mapping:
+/job:localhost/replica:0/task:0/gpu:0 -> device: 0, name: GK20A, pci bus id: 0000:00:00.0
+
+>>> print sess.run(c)
+b: /job:localhost/replica:0/task:0/gpu:0
+I tensorflow/core/common_runtime/simple_placer.cc:388] b: /job:localhost/replica:0/task:0/gpu:0
+a: /job:localhost/replica:0/task:0/gpu:0
+I tensorflow/core/common_runtime/simple_placer.cc:388] a: /job:localhost/replica:0/task:0/gpu:0
+MatMul: /job:localhost/replica:0/task:0/gpu:0
+I tensorflow/core/common_runtime/simple_placer.cc:388] MatMul: /job:localhost/replica:0/task:0/gpu:0
+[[ 22.  28.]
+ [ 49.  64.]]
+>>> 
+
+```
+
 
 #### Known Issues during compilation
 
-1. Error with NVIDIA DRIVER. I got some weird error such as `could not find cuDevicePrimaryCtxSetFlags in libcuda` . The issue I suspect due to incompatible driver.
-```
-sudo apt-get install libcuda1-367
-
-```
 2. Ran out of memory. Try to update `--local-resoures` where n1,n2,n3 is memroy,cpu_thread,i/o input
 
 ```shell
