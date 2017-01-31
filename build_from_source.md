@@ -55,20 +55,19 @@ cd protobuf
 git checkout v3.1.0
 ```
 
-* Build and Install `protobuf 3.1.0`
+* Build and Install `protobuf 3.1.0` - for grpc-java build
 ```shell
 ./autogen.sh
 LDFLAGS=-static ./configure --prefix=$(pwd)/../
 sed -i -e 's/LDFLAGS = -static/LDFLAGS = -all-static/' ./src/Makefile
-# Take around
+# Take around 8 minutes
 make -j 4
-
 sudo make install
 ```
 
 However, we need older version protobuf v3.0.0-beta-2 to build bazel. Notice that I did not run `sudo make install`, so system still uses v3.1.0. 
 
- * Build `protobuf 3.0.0-beta2`
+ * Build `protobuf 3.0.0-beta2` - for bazel build
 ```shell
 git checkout v3.0.0-beta-2
 ./autogen.sh
@@ -92,13 +91,9 @@ git checkout v0.15.0
 
 * Edit file `grpc-java\compiler\build.gradle` so it could build on Linux ARM32
 ```shell
-cd ..\compiler
 vim build.gradle
-```
 
-* Add the following lines to the file
-```shell
-# you can show line numbers in vim by :set number
+# Add the following lines to the file, you can show line numbers in vim by :set number
 # Around line 49.
     ...
     gcc(Gcc) {
@@ -150,22 +145,30 @@ unzip -d bazel bazel-0.4.3-dist.zip
 vim ./compile.sh
 # Around line 30. Change ${VERBOSE:=no} to ${VERBOSE:=yes}
 ${VERBOSE:=yes}
+
+# Limit heap size
+vim scripts/bootstrap/compile.sh
+# Around line 137
+run "${JAVAC}" -classpath "${classpath}" -sourcepath "${sourcepath}" \
+      -d "${output}/classes" -source "$JAVA_VERSION" -target "$JAVA_VERSION" \
+      -encoding UTF-8 "@${paramfile}" -J-Xmx5
 ```
 
 * Configure file `tools/cpp/cc_configure.bzl` . The issue has been discuess on [here](https://github.com/bazelbuild/bazel/issues/1264)
 ```shell
-# Add an additional if statement to  _get_cpu_value()
+# Add an additional if statement to  _get_cpu_value() aroubd line 143
 result = repository_ctx.execute(["uname", "-m"])
-machine_cpu = result.stdout.strip()
-if machine_cpu in ["arm", "armv7l", "aarch64"]:
+if result.stdout.strip() in ["arm", "armv7l", "aarch64"]:
 	return "arm"
-return "k8" if machine in ["amd64", "x86_64", "x64"] else "piii"
+return "k8" if result.stdout.strip() in ["amd64", "x86_64", "x64"] else "piii"
 ```
 
  * Build `bazel` with `protoc v3.0.0-beta-2` and `grpc-java`
 ```shell
-PROTOC=../protobuf/src/protoc
-GRPC_JAVA_PLUGIN=../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java
+cp ../protobuf/src/protoc third_party/protobuf/protoc-linux-arm32.exe
+cp ../grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java third_party/grpc/protoc-gen-grpc-java-0.15.0-linux-arm32.exe
+GRPC_JAVA_PLUGIN=${GRPC_JAVA_PLUGIN:-third_party/grpc/protoc-gen-grpc-java-0.15.0-linux-arm32.exe}
+PROTOC=${PROTOC:-third_party/protobuf/protoc-linux-arm32.exe}
 sudo ./compile.sh
 ```
 
