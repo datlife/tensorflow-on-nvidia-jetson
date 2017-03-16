@@ -6,17 +6,23 @@ Install dependencies for TensorFlow:
 sudo apt-get update
 sudo apt-get install python-pip python-dev
 ```
-Download set-up file: 
+
+Clone this repo: 
 ```shell
-wget https://github.com/dat-ai/tensorfow-nvidia-jetson/
+git clone https://github.com/dat-ai/tensorfow-nvidia-jetson/
+cd tensorfow-nvidia-jetson
 ```
+
 Install file with pip
 ```shell
-sudo pip install
+sudo pip install tensorflow-0.8.0-py2-none-any.whl
 ```
+
 Test TenforFlow on NVIDIA Jetson TK1
 ```shell
 python
 import tensorflow as tf
 ```
+
+*Notes: I plan to build TensorFlow 1.0 on Jetson TK1 on this upcoming break.*
 -----
