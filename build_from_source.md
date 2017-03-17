@@ -207,7 +207,7 @@ Available commands:
 ...
 ```
 
-### B. Set up `CUDA 7.0` and `cuDNN v4` as compiler for TensorFlow
+### B. Set up `CUDA 7.0` and `cuDNN v3` as compiler for TensorFlow
 -------------------------------------------------------------------
 The reason is that TF supports only CUDA 7.0 and up. Although we cannot use CUDA 7.0 on TK1, we can still install to use it as a compiler.
 
@@ -221,7 +221,9 @@ sudo apt-get update && sudo apt-get install cuda-toolkit-7-0
 * Download `cuDNN 7.0` to use during compilation
 ```shell
 # Download  cuDNN 4 and decompress
-tar -xvf cudnn-7.0-linux-ARMv7-v4.0-prod.tgz 
+wget http://developer.download.nvidia.com/assets/cuda/secure/cuDNN/v3/cudnn-7.0-linux-armv7-v3.0-prod.tgz?autho=1489720199_79fccba44cfc1ef3c1f9aba9c8da176b&file=cudnn-7.0-linux-armv7-v3.0-prod.tgz
+
+tar -xvf cudnn-7.0-linux-ARMv7-v3.0-prod.tgz 
 cd cudnn/cuda/
 
 # Copy to cuda folder
