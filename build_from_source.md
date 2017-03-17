@@ -156,7 +156,7 @@ patch -p1 < ../tensorflow_0.12.1_jetsontk1.patch
 
 * Replace all `lib-64` with `lib` and configure TF before installation.
 ```shell
-grep -Rl "lib64"| xargs sed -i 's/lib64/lib/g'
+sudo grep -Rl 'lib64' | sudo xargs sed -i 's/lib64/lib/g'
 ```
 
 * Configure TF before installation (~./.bashrc and cuDNN is set up correctly).
