@@ -140,7 +140,7 @@ wget https://github.com/bazelbuild/bazel/releases/download/0.4.3/bazel-0.4.3-dis
 unzip -d bazel bazel-0.4.3-dist.zip
 ```
 
-* Configure file `./compile.sh`:
+* Configure file `./compile.sh` and `scripts/bootstrap/compile.sh` (otherwise you will get `OutOfResource` error):
 ```shell
 vim ./compile.sh
 # Around line 30. Change ${VERBOSE:=no} to ${VERBOSE:=yes}
@@ -149,9 +149,10 @@ ${VERBOSE:=yes}
 # Limit heap size
 vim scripts/bootstrap/compile.sh
 # Around line 137
+# Add this part `-J-Xmx2g`   <---Set maximum Heap Size to 2GB
 run "${JAVAC}" -classpath "${classpath}" -sourcepath "${sourcepath}" \
       -d "${output}/classes" -source "$JAVA_VERSION" -target "$JAVA_VERSION" \
-      -encoding UTF-8 "@${paramfile}" -J-Xmx5
+      -encoding UTF-8 "@${paramfile}" -J-Xmx2g
 ```
 
 * Configure file `tools/cpp/cc_configure.bzl` . The issue has been discuess on [here](https://github.com/bazelbuild/bazel/issues/1264)
