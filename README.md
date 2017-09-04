@@ -23,6 +23,4 @@ Test TenforFlow on NVIDIA Jetson TK1
 python
 import tensorflow as tf
 ```
-
-*Notes: I plan to build TensorFlow 1.0 on Jetson TK1 on this upcoming break.*
 -----
